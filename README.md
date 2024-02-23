@@ -44,6 +44,36 @@ Here are some key features and methods provided by the path module:
 - path.win32: Provides Windows-specific path methods.
 - path.posix: Provides POSIX-specific path methods.
 
+###########################
+# NODE.JS REQ & RES OBJECTS
+###########################
+
+## res.sendFile() method in Node.js
+
+The sendFile() method in Node.js is used to send files as a response to an HTTP request. It’s particularly useful when you want to serve static files like HTML, PDFs, multimedia, or any other type of file.
+
+- Purpose: The primary purpose of this method is to stream the file data directly to the client as it’s being read, rather than loading the entire file into memory before sending it. This approach is more efficient and avoids memory overhead.
+- Content-Type: The method sets the Content-Type HTTP header field based on the filename extension. This ensures that the web browser handles the response appropriately.
+
+Example:
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+http.createServer((request, response) => {
+    const filePath = path.join(__dirname, 'myfile.mp3');
+    const stat = fs.statSync(filePath);
+
+    response.writeHead(200, {
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': stat.size
+    });
+
+    const readStream = fs.createReadStream(filePath);
+    readStream.pipe(response);
+}).listen(2000);
+
 ############
 # Express.js 
 ############
@@ -105,6 +135,31 @@ app.get('/user/:id', (req, res, next) => {
 }, (req, res, next) => {
   res.send('User Info');
 });
+
+# express.Router() function
+
+express.Router() allows you to create modular route handlers, making your Express application more organized and maintainable. express.Router() is a function that returns an instance of an Express router. 
+
+Use
+
+- Modularity: By using routers, you can organize your routes into separate files or modules. This makes your codebase more maintainable and easier to understand.
+- Middleware: You can attach middleware functions to specific routes within the router. These middleware functions will only apply to the routes defined within that router.
+- Scalability: As your application grows, you can create multiple routers for different parts of your app (e.g., authentication, API endpoints, user profiles).
+
+Example:
+
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.send('Hello, world!');
+});
+
+Mounting the Router
+
+app.use('/api', router); // Mounts the router at '/api'
+
+
 
 
 
