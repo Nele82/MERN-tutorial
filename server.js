@@ -5,4 +5,6 @@ const PORT = process.env.PORT || 3500
 
 app.use('/',  express.static(path.join(__dirname, '/public')))
 
+app.use('/')
+
 app.listen(PORT, ()=> {console.log(`Server running at ${PORT}`)})

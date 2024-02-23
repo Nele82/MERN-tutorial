@@ -65,3 +65,46 @@ Example:
 app.use(express.static('public'));
 
 Here, the 'public' directory contains your static assets (images, CSS, JS files).
+
+## app.use() method
+
+The app.use() method in Express.js is a powerful tool for managing middleware within your application. An Express application is essentially a series of middleware function calls. Middleware functions have access to the request object (req), the response object (res), and the 'next' middleware function in the application’s request-response cycle. If a middleware function doesn’t end the cycle, it must call next() to pass control to the 'next' middleware function.
+
+TYPES OF MIDDLEWARE
+
+<<< Application-level middleware >>>
+
+Bound to an instance of the app object using app.use() or app.METHOD(). It handles requests for specific HTTP methods (e.g., GET, PUT, POST).
+
+Example without a mount path:
+
+const express = require('express');
+const app = express();
+
+app.use((req, res, next) => {
+  console.log('Time:', Date.now());
+  next();
+});
+
+Example with a mount path (/user/:id):
+
+app.use('/user/:id', (req, res, next) => {
+  console.log('Request Type:', req.method);
+  next();
+});
+
+<<< Router-level middleware >>>
+
+Associated with specific routes. You can define multiple routes for a path.
+
+Example:
+
+app.get('/user/:id', (req, res, next) => {
+  console.log('ID:', req.params.id);
+  next();
+}, (req, res, next) => {
+  res.send('User Info');
+});
+
+
+
