@@ -74,6 +74,34 @@ http.createServer((request, response) => {
     readStream.pipe(response);
 }).listen(2000);
 
+## req.accepts() method
+
+accepts() method checks if the specified content types are acceptable based on the request’s Accept HTTP header field.
+
+Example:
+
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  const accept = req.accepts(['json', 'html']);
+  switch (accept) {
+    case 'json':
+      res.setHeader('Content-Type', 'application/json');
+      res.write('{"message": "Hello, world!"}');
+      break;
+    case 'html':
+      res.setHeader('Content-Type', 'text/html');
+      res.write('<h1>Hello, world!</h1>');
+      break;
+    default:
+      res.statusCode = 406; // Not Acceptable
+      res.end('Not acceptable content type.');
+  }
+  res.end();
+});
+
+server.listen(3000);
+
 ############
 # Express.js 
 ############
@@ -159,7 +187,10 @@ Mounting the Router
 
 app.use('/api', router); // Mounts the router at '/api'
 
+#################################################
+# HTTP RESPONSE ERROR CODES (USED IN THE PROJECT)
+#################################################
 
-
+- 404 Not Found - The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client.
 
 
