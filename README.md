@@ -325,6 +325,91 @@ const userSchema = new mongoose.Schema({
 // Create a model using the schema
 const User = mongoose.model('User', userSchema);
 
+### mongoose.connect() method
+
+The mongoose.connect() establishes a connection between your Node.js application and a MongoDB database. It allows your application to interact with the database, perform CRUD (Create, Read, Update, Delete) operations, and manage data models.
+
+Syntax:
+
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test', options);
+
+Parameters:
+
+The first argument is the MongoDB connection string, which specifies the database location. In the example above, we connect to a local database named “test”.
+The second argument (options) is optional and can include settings like { useNewUrlParser: true }.
+
+Connection Events:
+
+After calling mongoose.connect(), you can listen for various events related to the connection:
+ >>> error: Triggered if there’s an error during connection.
+ >>> open: Indicates that the connection is successfully established.
+ >>> close: Fired when the connection is closed (e.g., when your app shuts down).
+
+Example:
+
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function callback() {
+    console.log('Connected to MongoDB!');
+    // Perform further operations here
+});
+
+- const mongoose = require('mongoose');: This line imports the Mongoose library into your Node.js application. Mongoose provides an elegant way to interact with MongoDB databases.
+- mongoose.connect('mongodb://localhost/test');: Here, you’re establishing a connection to a MongoDB database running locally. The URL 'mongodb://localhost/test' specifies the database server (localhost) and the database name (test). You can replace this with the actual URL of your MongoDB server.
+- const db = mongoose.connection;: The db variable holds a reference to the database connection.
+- db.on('error', console.error.bind(console, 'connection error:'));: This line sets up an event listener for any connection errors. If there’s an error during the connection process, it will be logged to the console.
+- db.once('open', function callback() { ... });: The 'once' event fires when the connection is successfully established. Inside the callback function, you can perform further database operations (e.g., querying, inserting, updating).
+
+## mongoose-sequence
+
+Mongoose-sequence is a versatile plugin for Mongoose, a popular MongoDB ODM (Object Database Modeling) library in Node.js. It acts as an intermediary layer between your application code and the MongoDB database, providing features like schema validation, query building, and data modeling. It simplifies the translation of MongoDB data into a format that Node.js can work with.
+
+### Mongoose-Sequence Plugin: Auto-Increment Fields
+
+The mongoose-sequence plugin allows you to create fields in your Mongoose schemas that automatically increment their values. When a new document is inserted into a collection or when you explicitly want to increment a field, this plugin comes in handy. You can use it for both global and scoped sequences:
+
+<<< Global Sequences >>> 
+
+Each document has a unique value for the sequence field. For example, if you want an auto-incremented 'id' field in your User collection, you can achieve it like this:
+
+const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
+const UserSchema = mongoose.Schema({
+    name: String,
+});
+
+UserSchema.plugin(AutoIncrement, { inc_field: 'id' });
+
+<<< Scoped Sequences >>> 
+
+The counter depends on the value of other field(s). For instance, if your user model has a rank field representing a user’s rank in a tournament, you can increment it based on events. Behind the scenes, a commodity collection named counters is created to store increment references.
+
+### mongoose.Schema.plugin() method
+
+The plugin() method is defined on the Schema class. The mongoose.Schema.plugin() method in Node.js allows you to register plugins for Mongoose schemas. Plugins are reusable pieces of functionality that you can add to your Mongoose schemas. They enhance the schema with custom methods, virtuals, hooks, or other features.
+
+Syntax: schemaObject.plugin(callback_function, options)
+
+Example: 
+
+const mongoose = require('mongoose');
+
+// Define a schema
+const gameSchema = new mongoose.Schema({
+    // ... fields ...
+});
+
+// Register a plugin (e.g., lastMod) with options
+gameSchema.plugin(require('./lastMod'), { index: true });
+
+// Create a model from the schema
+const Game = mongoose.model('Game', gameSchema);
+
 ################################
 # NODE.JS REQ & RES OBJECTS
 ################################
