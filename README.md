@@ -410,8 +410,12 @@ gameSchema.plugin(require('./lastMod'), { index: true });
 // Create a model from the schema
 const Game = mongoose.model('Game', gameSchema);
 
+## bcrypt
+
+The bcrypt is a library that helps you securely hash passwords. It’s commonly used to store passwords in a hashed format rather than plain text. When users create an account or log in, their passwords are hashed using bcrypt. This ensures that even if the database is compromised, the actual passwords remain hidden. bcrypt uses the Blowfish encryption algorithm to hash passwords. It allows you to salt the passwords, adding an extra layer of security. Salting involves adding random data to the password before hashing it. The resulting hash is a fixed-length string that is difficult to reverse-engineer back to the original password.
+
 ################################
-# NODE.JS REQ & RES OBJECTS
+# NODE.JS ERR, REQ & RES OBJECTS
 ################################
 
 ## res.sendFile() method in Node.js
@@ -467,6 +471,18 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(3000);
+
+## Error response object properties
+
+- stack: This property provides a stack trace for the error. It shows the sequence of function calls that led to the error. You can access it like this:
+
+console.log(new Error('NotFound').stack);
+
+- name: The name property contains the name of the error. For instance, when you create an error using new Error('NotFound'), the name will be set to 'Error'.
+
+- message: The message property holds a human-readable description of the error. In our example, it would be 'NotFound'.
+
+- no, code, syscall, and hostname: These properties are not standard properties of the native Error object in Node.js. However, they might appear in custom error objects or specific libraries. If you encounter them, their meanings would depend on the context in which they are used. For more details, refer to the specific documentation or source code where these properties are defined.
 
 ############
 # Express.js 
@@ -646,3 +662,53 @@ With body-parser, you can handle nested objects, arrays, and other complex data 
 You have more control over how data is parsed. You can set custom limits (e.g., maximum request size) and other options.
 - Modularity:
 Since body-parser is a separate package, you can choose to use only the parts you need. It’s not tied to Express, so you can use it with other frameworks too.
+
+## express-async-handler
+
+The express-async-handler module in Node.js is a simple middleware designed to handle exceptions within async routes in an Express application. It ensures that any errors occurring during asynchronous operations are properly caught and passed to your Express error handlers.
+
+Example:
+
+const asyncHandler = require('express-async-handler');
+
+// Example usage in an Express route:
+express.get('/', asyncHandler(async (req, res, next) => {
+    const bar = await foo.findAll();
+    res.send(bar);
+}));
+
+Without the 'express-async-handler' middleware the code would look something like this:
+
+express.get('/', (req, res, next) => {
+    foo.findAll()
+        .then(bar => {
+            res.send(bar);
+        })
+        .catch(next); // Error passed on to the error handling route
+});
+
+############
+# JS METHODS
+############
+
+## find()
+
+The find() method in JavaScript is a powerful tool for searching through an array and retrieving the first element that satisfies a specified condition. The find() method is called on an array and accepts a callback function as its argument. The callback function is executed for each element in the array. It should return a truthy value to indicate that a matching element has been found, or a falsy value otherwise. The function is called with the following arguments:
+- element: The current element being processed in the array.
+- index: The index of the current element being processed.
+- array: The array on which find() was called.
+
+Example:
+
+const inventory = [
+  { name: "apples", quantity: 2 },
+  { name: "bananas", quantity: 0 },
+  { name: "cherries", quantity: 5 },
+];
+
+function isCherries(fruit) {
+  return fruit.name === "cherries";
+}
+
+const foundCherries = inventory.find(isCherries);
+// Result: { name: 'cherries', quantity: 5 }
