@@ -364,6 +364,82 @@ db.once('open', function callback() {
 - db.on('error', console.error.bind(console, 'connection error:'));: This line sets up an event listener for any connection errors. If there’s an error during the connection process, it will be logged to the console.
 - db.once('open', function callback() { ... });: The 'once' event fires when the connection is successfully established. Inside the callback function, you can perform further database operations (e.g., querying, inserting, updating).
 
+### findById() method
+
+In Node.js, the findById() function is commonly associated with Mongoose, a popular library for working with MongoDB. The findById() function is used to retrieve a single document from a MongoDB collection based on its unique _id field.
+
+Example:
+
+const mongoose = require('mongoose');
+
+// Define a User schema
+const userSchema = new mongoose.Schema({
+    _id: String,
+    name: String,
+    email: String
+});
+
+// Create a User model
+const User = mongoose.model('User', userSchema);
+
+// Example usage of findById()
+app.get('/msg/:id', (req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if (err) {
+            res.status(500).send(err);
+        } else if (user) {
+            res.json(user);
+        } else {
+            res.sendStatus(404); // Not found
+        }
+    });
+});
+
+### save() method
+
+The save() method in Mongoose serves the purpose of persisting a document in the MongoDB database. When you invoke this function, you can either add new documents to the database or update existing ones. 
+
+<<< Creating a New Document >>>
+
+When you create an instance of a Mongoose model using new, calling save() makes Mongoose insert a new document. For example:
+
+const Person = mongoose.model('Person', Schema({
+    name: String,
+    rank: String
+}));
+
+const doc = new Person({ name: 'Will Riker', rank: 'Commander' });
+await doc.save();
+
+In this case, save() inserts a new document with the specified name and rank.
+
+<<< Updating an Existing Document >>>
+
+If you load an existing document from the database and modify it, save() updates the existing document. For instance:
+
+const person = await Person.findOne();
+person.rank = 'Captain';
+await person.save();
+
+Here, save() modifies the existing document’s rank field.
+
+### deleteOne() method
+
+Deletes a document from the collection.
+Syntax:
+
+Model.deleteOne(<filter>)
+
+- Parameters:
+<filter>: Specifies the condition for deletion.
+- Behavior:
+Deletes the first document that matches the condition. Similar to remove(), but deletes at most one document regardless of the single option.
+
+Example:
+
+const User = mongoose.model('User', userSchema);
+await User.deleteOne({ username: 'john_doe' });
+
 ## mongoose-sequence
 
 Mongoose-sequence is a versatile plugin for Mongoose, a popular MongoDB ODM (Object Database Modeling) library in Node.js. It acts as an intermediary layer between your application code and the MongoDB database, providing features like schema validation, query building, and data modeling. It simplifies the translation of MongoDB data into a format that Node.js can work with.
@@ -413,6 +489,48 @@ const Game = mongoose.model('Game', gameSchema);
 ## bcrypt
 
 The bcrypt is a library that helps you securely hash passwords. It’s commonly used to store passwords in a hashed format rather than plain text. When users create an account or log in, their passwords are hashed using bcrypt. This ensures that even if the database is compromised, the actual passwords remain hidden. bcrypt uses the Blowfish encryption algorithm to hash passwords. It allows you to salt the passwords, adding an extra layer of security. Salting involves adding random data to the password before hashing it. The resulting hash is a fixed-length string that is difficult to reverse-engineer back to the original password.
+
+### bcrypt.hash() method
+
+The bcrypt.hash() method is a powerful tool for securely hashing passwords. 
+
+Example:
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Number of salt rounds (adjust as needed)
+
+const plainTextPassword = 'HeypasswordIsSafe@';
+
+bcrypt.genSalt(saltRounds)
+  .then((salt) => {
+    console.log(`Salt: ${salt}`);
+    return bcrypt.hash(plainTextPassword, salt);
+  })
+  .then((hash) => {
+    console.log(`Hash: ${hash}`);
+    // Store the hash in your password database
+  })
+  .catch((err) => {
+    console.error('Error:', err);
+  });
+
+### bcrypt.genSalt() method
+
+The bcrypt.genSalt() method generates a salt for password hashing.
+
+Example:
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Number of salt rounds (adjust as needed)
+
+bcrypt.genSalt(saltRounds, (err, salt) => {
+  if (err) {
+    console.error('Error generating salt:', err);
+    return;
+  }
+  console.log('Generated salt:', salt);
+  // Use this salt for password hashing
+});
 
 ################################
 # NODE.JS ERR, REQ & RES OBJECTS
@@ -573,7 +691,10 @@ app.use('/api', router); // Mounts the router at '/api'
 # HTTP RESPONSE ERROR CODES (USED IN THE PROJECT)
 #################################################
 
+- 400 Bad Request - The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
 - 404 Not Found - The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client.
+- 409 Conflict - This response is sent when a request conflicts with the current state of the server.
+- 201 Created - The request succeeded, and a new resource was created as a result. This is typically the response sent after POST requests, or some PUT requests.
 
 ############
 # MIDDLEWARE
@@ -712,3 +833,28 @@ function isCherries(fruit) {
 
 const foundCherries = inventory.find(isCherries);
 // Result: { name: 'cherries', quantity: 5 }
+
+## Array.isArray() method
+
+The isArray() method in JavaScript is used to check whether an object is an array or not.
+
+Syntax: Array.isArray(obj)
+
+Example:
+
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+let result = Array.isArray(fruits); // Returns true
+
+#################
+# MONGODB METHODS
+#################
+
+## findOne() method
+
+The findOne() method in MongoDB is used to retrieve a single document from a collection based on specified criteria. 
+
+Syntax:
+
+db.collection.findOne( <query>, <projection>, <options> )
+
+
